@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  <title>Memory Game</title>
+</head>
+<body>
+
+<h1 id="typing">MEMORY CARD :D</h1>
+
+<div id="memory-board"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () { 
+    const cardValues = ['image1', 'image2', 'image3', 'image4', 'image5', 'image6', 'image7', 'image8', 'image1', 'image2', 'image3', 'image4', 'image5', 'image6', 'image7', 'image8'];
+    let cards = [];
+    let flippedCards = [];
+    let lockBoard = false;
+    let count = 0; 
+
+    //randomizza le carte
+    function shuffle(array) {
+      let currentIndex = array.length, randomIndex; 
+
+      while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+      }
+      return array;
+    }
+
+    // inizializza il game
+    function initGame() {
+      cards = shuffle(cardValues);
+      const memoryBoard = document.getElementById('memory-board');
+
+      cards.forEach((value, index) => {
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.dataset.index = index;
+        card.addEventListener('click', flipCard);
+        memoryBoard.appendChild(card);
+      });
+    }
+
+    // gira la carta
+    function flipCard() {
+      if (lockBoard) return;
+      const card = this;
+      card.classList.add('flipped');
+      const img = document.createElement('img');
+      img.src = cards[card.dataset.index] + '.jpg';
+      card.appendChild(img);
+      card.style.backgroundColor = '#fff';
+
+      flippedCards.push(card);
+
+      if (flippedCards.length === 2) {
+        lockBoard = true;
+        setTimeout(checkMatch, 1000);
+      }
+    }
+
+    // controllo delle due carte se uguali
+    function checkMatch() {
+      const [card1, card2] = flippedCards;
+
+      if (card1.firstChild.src === card2.firstChild.src) {
+        // uguali
+        card1.removeEventListener('click', flipCard);
+        card2.removeEventListener('click', flipCard);
+        count++;
+        if (count == 8) {
+            alert("Hai vinto");
+        }
+      } else {
+        // non sono uguali e la carta si rigira
+        card1.firstChild.remove();
+        card2.firstChild.remove();
+        card1.style.backgroundColor = ' rgb(13, 126, 92)';
+        card2.style.backgroundColor = ' rgb(13, 126, 92)';
+        card1.classList.remove('flipped');
+        card2.classList.remove('flipped');
+      }
+
+      flippedCards = [];
+      lockBoard = false;
+    }
+
+    // inizio del gioco
+    initGame();
+  });
+</script>
+
+</body>
+</html>
